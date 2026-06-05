@@ -166,7 +166,7 @@ function initNavigation() {
   });
 
   // Close nav on link click in mobile
-  document.querySelectorAll(".nav-links a").forEach(link => {
+  document.querySelectorAll(".nav-links a, .nav-links button").forEach(link => {
     link.addEventListener("click", () => {
       navLinks.classList.remove("active");
     });
@@ -987,20 +987,27 @@ function checkLoginStatus() {
   const loginBtn = document.getElementById("loginBtn");
   const userDashboardBtn = document.getElementById("userDashboardBtn");
   const logoutBtn = document.getElementById("logoutBtn");
+  
+  const mLoginBtn = document.getElementById("mobileLoginBtn");
+  const mDashboardBtn = document.getElementById("mobileUserDashboardBtn");
+  const mLogoutBtn = document.getElementById("mobileLogoutBtn");
 
-  if (currentUser && currentRole) {
-    loginBtn.style.display = "none";
-    userDashboardBtn.style.display = "inline-flex";
-    logoutBtn.style.display = "inline-flex";
-    
+  const isLoggedIn = currentUser && currentRole;
+
+  if (loginBtn) loginBtn.style.display = isLoggedIn ? "none" : "inline-flex";
+  if (userDashboardBtn) userDashboardBtn.style.display = isLoggedIn ? "inline-flex" : "none";
+  if (logoutBtn) logoutBtn.style.display = isLoggedIn ? "inline-flex" : "none";
+
+  if (mLoginBtn) mLoginBtn.style.display = isLoggedIn ? "none" : "inline-flex";
+  if (mDashboardBtn) mDashboardBtn.style.display = isLoggedIn ? "inline-flex" : "none";
+  if (mLogoutBtn) mLogoutBtn.style.display = isLoggedIn ? "inline-flex" : "none";
+
+  if (isLoggedIn) {
     // Check if chatbot is active
     if (currentRole === 'student' && document.getElementById("chatBoxContainer").style.display === "none") {
       toggleChatbotView(true);
     }
   } else {
-    loginBtn.style.display = "inline-flex";
-    userDashboardBtn.style.display = "none";
-    logoutBtn.style.display = "none";
     toggleChatbotView(false);
   }
 }

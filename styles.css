@@ -215,6 +215,10 @@ header {
   color: var(--text-primary);
 }
 
+.mobile-action-item {
+  display: none !important;
+}
+
 /* Playful Doodle Buttons */
 .btn {
   display: inline-flex;
@@ -1601,7 +1605,28 @@ footer {
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .logo-tag {
+    display: none !important;
+  }
+  
+  .nav-actions #loginBtn, 
+  .nav-actions #userDashboardBtn, 
+  .nav-actions #logoutBtn {
+    display: none !important;
+  }
+  
+  .mobile-action-item {
+    display: block !important;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .mobile-action-item .btn {
+    margin: 5px auto;
+    display: inline-flex;
+  }
+
   .hero-grid, .about-grid {
     grid-template-columns: 1fr;
     text-align: center;
