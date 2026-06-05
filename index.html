@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Ruang Teduh - Platform Pemantauan Kesehatan Mental Siswa SMA. Deteksi dini kuesioner harian, CurhatKuy AI, dan layanan bimbingan konseling hangat.">
+  <meta name="theme-color" content="#FF7BAC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ruang Teduh">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <title>Ruang Teduh - Deteksi Dini & Pendamping Kesehatan Mental Siswa</title>
+  
+  <!-- Font Awesome for simple icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css?v=1.2">
+</head>
+<body>
+
+  <!-- Loading Page Overlay -->
+  <div id="pageLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-primary); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease;">
+    <div style="font-size: 80px; animation: float 2s infinite ease-in-out;">☁️</div>
+    <div style="font-family: var(--font-display); font-size: 28px; margin-top: 20px; color: var(--text-primary);">Membuka Ruang Teduh...</div>
+    <div style="width: 150px; height: 6px; background-color: var(--light-lavender); border-radius: 3px; margin-top: 15px; overflow: hidden; border: 1.5px solid var(--border-color); position: relative;">
+      <div style="width: 100%; height: 100%; background-color: var(--brave-pink); animation: loader-bar 1.5s infinite ease-in-out; transform-origin: left; position: absolute; top: 0; left: 0;"></div>
+    </div>
+  </div>
+
+  <!-- Floating Background Elements -->
+  <svg class="doodle-bg f1" width="80" height="80" viewBox="0 0 100 100">
+    <path d="M20,50 Q40,20 50,50 T80,50" fill="none" stroke="var(--brave-pink)" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="50" cy="30" r="5" fill="var(--brave-pink)"/>
+  </svg>
+  <svg class="doodle-bg f2" width="120" height="120" viewBox="0 0 120 120" style="bottom: 10%; left: 5%;">
+    <!-- A cute cloud doodle -->
+    <path d="M20,80 Q10,60 30,50 Q50,30 70,50 Q90,40 100,60 Q110,80 90,90 Q70,95 50,90 Q30,95 20,80 Z" fill="var(--sky-blue)" opacity="0.6"/>
+  </svg>
+  <svg class="doodle-bg f3" width="90" height="90" viewBox="0 0 100 100" style="top: 25%; right: 10%;">
+    <!-- Sun doodle -->
+    <circle cx="50" cy="50" r="20" fill="var(--warm-cream)" stroke="var(--deep-navy)" stroke-width="3"/>
+    <path d="M50,15 L50,5 M50,85 L50,95 M15,50 L5,50 M85,50 L95,50 M25,25 L18,18 M75,75 L82,82 M25,75 L18,82 M75,25 L82,18" stroke="var(--deep-navy)" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+
+  <!-- Navigation -->
+  <header>
+    <div class="container nav-container">
+      <a href="#" class="logo">
+        <!-- SVG Logo: Hand-drawn Cloud + Heart -->
+        <svg width="40" height="40" viewBox="0 0 100 100" style="overflow: visible;">
+          <path d="M20,60 C10,50 15,30 35,30 C40,15 65,15 75,30 C90,30 95,50 85,65 C75,75 25,75 20,60 Z" fill="var(--sky-blue)" stroke="var(--deep-navy)" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M40,55 C35,45 45,35 50,45 C55,35 65,45 60,55 L50,65 Z" fill="var(--brave-pink)" stroke="var(--deep-navy)" stroke-width="2"/>
+        </svg>
+        <span class="logo-text">RUANG <span style="color: var(--brave-pink);">TEDUH</span></span>
+        <span class="logo-tag">Masa Transisi Aman</span>
+      </a>
+      
+      <button class="menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+      
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" class="active" onclick="navigateTo('home')">Beranda</a></li>
+        <li><a href="#tentang" onclick="navigateTo('home', 'tentang')">Tentang</a></li>
+        <li><a href="#kuesioner" onclick="navigateTo('home', 'kuesioner')">Cek Kondisi</a></li>
+        <li><a href="#curhat" onclick="navigateTo('home', 'curhat')">CurhatKuy AI</a></li>
+        <li><a href="#konselor" onclick="navigateTo('home', 'konselor')">Konselor</a></li>
+        <li><a href="#artikel" onclick="navigateTo('home', 'artikel')">Edukasi</a></li>
+      </ul>
+      
+      <div class="nav-actions">
+        <button class="btn btn-circle" id="themeToggle" title="Ganti Tema"><i class="fa-solid fa-moon"></i></button>
+        <button class="btn btn-sm btn-blue" id="pwaInstallBtn" style="display: none;" title="Instal Aplikasi"><i class="fa-solid fa-download"></i> <span class="install-text">Instal</span></button>
+        <button class="btn btn-sm btn-pink" id="loginBtn" onclick="showAuthModal()">Masuk</button>
+        <button class="btn btn-sm btn-green" id="userDashboardBtn" style="display: none;" onclick="showDashboard()">Dashboard</button>
+        <button class="btn btn-sm btn-cream" id="logoutBtn" style="display: none;" onclick="logout()">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="mainContent">
+
+    <!-- HOME SECTION (All Landing Page elements) -->
+    <div id="homePage">
+      
+      <!-- 1. Hero Section -->
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-content">
+            <h1 class="hero-title">RUANG <span>TEDUH</span></h1>
+            <p class="hero-subtitle">
+              "Tempat Aman untuk Mendengar, Memahami, dan Menemani Setiap Langkahmu."
+            </p>
+            <div class="hero-btns">
+              <a href="#kuesioner" class="btn btn-pink" onclick="scrollToSection('kuesioner')">
+                <i class="fa-solid fa-heart-pulse"></i> Mulai Cek Kondisi Mental
+              </a>
+              <a href="#curhat" class="btn btn-lavender" onclick="scrollToSection('curhat')">
+                <i class="fa-solid fa-comments"></i> Curhat Sekarang
+              </a>
+              <a href="#konselor" class="btn btn-green" onclick="scrollToSection('konselor')">
+                <i class="fa-solid fa-user-doctor"></i> Hubungi Konselor
+              </a>
+            </div>
+          </div>
+          
+          <div class="hero-illustration">
+            <!-- Floating Doodles around illustration -->
+            <span class="floating-doodle f1">🌈</span>
+            <span class="floating-doodle f2">✨</span>
+            <span class="floating-doodle f3">🌸</span>
+            <span class="floating-doodle f4">🍀</span>
+            
+            <div class="illustration-holder">
+              <!-- Beautiful Doodle SVG of students talking -->
+              <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Grass -->
+                <path d="M40,320 Q200,350 360,320 L360,380 L40,380 Z" fill="var(--hero-green)" stroke="var(--deep-navy)" stroke-width="4"/>
+                
+                <!-- Tree/Plants -->
+                <path d="M50,330 C40,250 100,230 110,320" fill="none" stroke="var(--deep-navy)" stroke-width="4" stroke-dasharray="5,5"/>
+                
+                <!-- Character 1 (Left - Listening) -->
+                <!-- Legs -->
+                <line x1="130" y1="300" x2="130" y2="340" stroke="var(--deep-navy)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="145" y1="300" x2="155" y2="340" stroke="var(--deep-navy)" stroke-width="5" stroke-linecap="round"/>
+                <!-- Body (Shirt) -->
+                <path d="M110,230 C110,230 150,220 160,260 L160,300 L110,300 Z" fill="var(--sky-blue)" stroke="var(--deep-navy)" stroke-width="4"/>
+                <!-- Arm & Tea/Book -->
+                <path d="M140,260 Q170,265 150,280" fill="none" stroke="var(--deep-navy)" stroke-width="4" stroke-linecap="round"/>
+                <!-- Head & Hair -->
+                <circle cx="135" cy="185" r="25" fill="#FFE0B2" stroke="var(--deep-navy)" stroke-width="4"/>
+                <path d="M110,185 C110,150 160,150 160,185 C145,170 125,170 110,185 Z" fill="#5D4037" stroke="var(--deep-navy)" stroke-width="3"/>
+                <!-- Face Details -->
+                <circle cx="130" cy="185" r="2" fill="var(--deep-navy)"/>
+                <circle cx="142" cy="185" r="2" fill="var(--deep-navy)"/>
+                <path d="M132,195 Q136,198 140,195" fill="none" stroke="var(--deep-navy)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Blush -->
+                <circle cx="126" cy="190" r="3" fill="var(--brave-pink)" opacity="0.6"/>
+                <circle cx="146" cy="190" r="3" fill="var(--brave-pink)" opacity="0.6"/>
+
+                <!-- Chat bubble between them -->
+                <path d="M180,120 Q170,90 200,90 Q230,90 230,110 Q230,130 200,130 Q190,130 185,135 L186,125 Z" fill="#FFF" stroke="var(--deep-navy)" stroke-width="3"/>
+                <path d="M195,110 C200,105 210,115 215,110" fill="none" stroke="var(--deep-navy)" stroke-width="2" stroke-linecap="round"/>
+
+                <!-- Character 2 (Right - Sharing) -->
+                <!-- Legs -->
+                <line x1="255" y1="300" x2="245" y2="340" stroke="var(--deep-navy)" stroke-width="5" stroke-linecap="round"/>
+                <line x1="270" y1="300" x2="270" y2="340" stroke="var(--deep-navy)" stroke-width="5" stroke-linecap="round"/>
+                <!-- Body (Shirt) -->
+                <path d="M235,230 C245,220 285,230 285,300 L235,300 Z" fill="var(--soft-lavender)" stroke="var(--deep-navy)" stroke-width="4"/>
+                <!-- Head & Hair -->
+                <circle cx="260" cy="185" r="25" fill="#FFD54F" stroke="var(--deep-navy)" stroke-width="4"/>
+                <path d="M235,185 C235,145 285,145 285,185 L275,170 L245,170 Z" fill="var(--deep-navy)" stroke="var(--deep-navy)" stroke-width="3"/>
+                <!-- Face Details -->
+                <circle cx="252" cy="185" r="2" fill="var(--deep-navy)"/>
+                <circle cx="264" cy="185" r="2" fill="var(--deep-navy)"/>
+                <path d="M253,195 Q258,200 263,195" fill="none" stroke="var(--deep-navy)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Blush -->
+                <circle cx="248" cy="190" r="3" fill="var(--brave-pink)" opacity="0.6"/>
+                <circle cx="268" cy="190" r="3" fill="var(--brave-pink)" opacity="0.6"/>
+                
+                <!-- Hearts around -->
+                <path d="M200,230 Q195,220 200,215 Q205,220 200,230" fill="var(--brave-pink)" stroke="var(--deep-navy)" stroke-width="1.5"/>
+                <path d="M170,160 Q167,153 170,150 Q173,153 170,160" fill="var(--brave-pink)" stroke="var(--deep-navy)" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Tentang Program -->
+      <section id="tentang" class="about">
+        <div class="container about-grid">
+          <div class="about-illustration">
+            <!-- Doodle SVG of safe comforting space -->
+            <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+              <rect x="50" y="50" width="300" height="240" rx="30" fill="var(--warm-cream)" stroke="var(--deep-navy)" stroke-width="4"/>
+              <!-- A cozy window in the doodle -->
+              <rect x="80" y="80" width="100" height="100" rx="10" fill="var(--sky-blue)" stroke="var(--deep-navy)" stroke-width="3"/>
+              <line x1="130" y1="80" x2="130" y2="180" stroke="var(--deep-navy)" stroke-width="3"/>
+              <line x1="80" y1="130" x2="180" y2="130" stroke="var(--deep-navy)" stroke-width="3"/>
+              <!-- Rainbow outside window -->
+              <path d="M90,120 A40,40 0 0,1 170,120" fill="none" stroke="var(--brave-pink)" stroke-width="4"/>
+              
+              <!-- Cute Sofa -->
+              <path d="M180,250 L320,250 L320,210 C320,190 300,180 280,180 L220,180 C200,180 180,190 180,210 Z" fill="var(--soft-lavender)" stroke="var(--deep-navy)" stroke-width="4"/>
+              <rect x="195" y="210" width="110" height="40" rx="5" fill="var(--light-pink)" stroke="var(--deep-navy)" stroke-width="3"/>
+              
+              <!-- Cute Plant -->
+              <rect x="100" y="240" width="30" height="40" rx="5" fill="#8D6E63" stroke="var(--deep-navy)" stroke-width="3"/>
+              <path d="M115,240 C105,210 85,210 100,190 C115,170 120,210 115,240 Z" fill="var(--hero-green)" stroke="var(--deep-navy)" stroke-width="3"/>
+              <path d="M115,240 C125,210 145,210 130,190 C115,170 110,210 115,240 Z" fill="var(--hero-green)" stroke="var(--deep-navy)" stroke-width="3"/>
+            </svg>
+          </div>
+          
+          <div class="about-content">
+            <span class="badge-initiative">Inisiatif Sekolah oleh NESHA FIDELYA FITRA</span>
+            <h2 class="about-title">Mengapa Ruang Teduh Hadir?</h2>
+            <p>
+              Program <strong>Ruang Teduh</strong> merupakan program oleh <strong>NESHA FIDELYA FITRA</strong> inisiatif sekolah berbasis pemantauan kesehatan mental siswa melalui kuesioner harian.
+            </p>
+            <p>
+              Program ini dirancang untuk mendeteksi kondisi psikologis siswa secara dini menggunakan formulir sederhana yang terdiri dari 5 pertanyaan utama dan 2–3 pertanyaan pendukung.
+            </p>
+            <p>
+              Hasil pengisian akan dikategorikan ke dalam tiga tingkat kondisi psikologis:
+            </p>
+            <div style="display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;">
+              <span class="priority-badge priority-low">💚 Ringan</span>
+              <span class="priority-badge priority-medium">💙 Sedang</span>
+              <span class="priority-badge priority-high">💖 Tinggi</span>
+            </div>
+            <div class="highlight-box">
+              ⚠️ Siswa yang menunjukkan kategori <strong>tinggi secara berulang sebanyak 3–4 kali</strong> dalam periode tertentu akan direkomendasikan untuk mendapatkan layanan Bimbingan Konseling (BK).
+            </div>
+            <p>
+              Program ini difokuskan pada siswa kelas X karena mereka sedang berada dalam masa transisi dari SMP ke SMA yang rentan terhadap tekanan sosial, adaptasi lingkungan baru, perundungan, diskriminasi, dan tantangan emosional lainnya.
+            </p>
+            <p>
+              Tujuan utama program adalah menciptakan sistem deteksi dini kesehatan mental siswa sehingga permasalahan psikologis dapat dikenali dan ditangani lebih cepat.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Statistik Program -->
+      <section class="stats">
+        <div class="container">
+          <h2 class="section-title">Ruang Teduh dalam Angka</h2>
+          <p class="section-subtitle">Bagaimana platform ini membantu mewujudkan ekosistem sekolah yang peduli dan suportif.</p>
+          
+          <div class="stats-grid">
+            <div class="card stat-card">
+              <span class="stat-icon">🎒</span>
+              <div class="stat-number" id="statSiswa">142</div>
+              <div class="stat-label">Siswa Terdaftar</div>
+            </div>
+            <div class="card stat-card">
+              <span class="stat-icon">📝</span>
+              <div class="stat-number" id="statKuesioner">584</div>
+              <div class="stat-label">Kuesioner Masuk</div>
+            </div>
+            <div class="card stat-card">
+              <span class="stat-icon">🤝</span>
+              <div class="stat-number" id="statPendampingan">18</div>
+              <div class="stat-label">Siswa Didampingi</div>
+            </div>
+            <div class="card stat-card">
+              <span class="stat-icon">📈</span>
+              <div class="stat-number">94%</div>
+              <div class="stat-label">Tingkat Partisipasi</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Form Kuesioner Harian -->
+      <section id="kuesioner" class="checkin">
+        <div class="container checkin-container">
+          <h2 class="section-title">Check-In Perasaan</h2>
+          <p class="section-subtitle">Luangkan waktu 1 menit untuk menceritakan bagaimana harimu berjalan. Data ini sangat rahasia dan aman.</p>
+          
+          <div class="card checkin-card">
+            <!-- Progress Tracker -->
+            <div class="checkin-progress">
+              <div class="checkin-progress-bar">
+                <div class="checkin-progress-fill" id="checkinProgressFill"></div>
+              </div>
+              <div class="checkin-step-dot active" id="dot-1">1</div>
+              <div class="checkin-step-dot" id="dot-2">2</div>
+              <div class="checkin-step-dot" id="dot-3">3</div>
+              <div class="checkin-step-dot" id="dot-4">4</div>
+              <div class="checkin-step-dot" id="dot-5">5</div>
+              <div class="checkin-step-dot" id="dot-6">P</div>
+            </div>
+
+            <!-- Quiz Steps Form -->
+            <div id="checkinForm">
+              
+              <!-- Pertanyaan Utama 1 -->
+              <div class="question-group active" data-step="1">
+                <h3 class="question-title">1. Bagaimana perasaanmu hari ini?</h3>
+                <div class="emoji-scale" data-question="q1">
+                  <button type="button" class="emoji-btn" data-val="5">😁<span class="emoji-label">Sangat Baik</span></button>
+                  <button type="button" class="emoji-btn" data-val="4">😊<span class="emoji-label">Baik</span></button>
+                  <button type="button" class="emoji-btn" data-val="3">😐<span class="emoji-label">Biasa Saja</span></button>
+                  <button type="button" class="emoji-btn" data-val="2">😔<span class="emoji-label">Buruk</span></button>
+                  <button type="button" class="emoji-btn" data-val="1">😢<span class="emoji-label">Sangat Buruk</span></button>
+                </div>
+              </div>
+
+              <!-- Pertanyaan Utama 2 -->
+              <div class="question-group" data-step="2">
+                <h3 class="question-title">2. Apakah kamu merasa bersemangat menjalani aktivitas hari ini?</h3>
+                <div class="emoji-scale" data-question="q2">
+                  <button type="button" class="emoji-btn" data-val="5">😁<span class="emoji-label">Sangat Semangat</span></button>
+                  <button type="button" class="emoji-btn" data-val="4">😊<span class="emoji-label">Semangat</span></button>
+                  <button type="button" class="emoji-btn" data-val="3">😐<span class="emoji-label">Cukup</span></button>
+                  <button type="button" class="emoji-btn" data-val="2">😔<span class="emoji-label">Lelah</span></button>
+                  <button type="button" class="emoji-btn" data-val="1">😢<span class="emoji-label">Sangat Lemas</span></button>
+                </div>
+              </div>
+
+              <!-- Pertanyaan Utama 3 -->
+              <div class="question-group" data-step="3">
+                <h3 class="question-title">3. Apakah kamu merasa cemas atau khawatir berlebihan hari ini?</h3>
+                <!-- Scoring inverted in JS -->
+                <div class="emoji-scale" data-question="q3">
+                  <button type="button" class="emoji-btn" data-val="1">😁<span class="emoji-label">Sama Sekali Tidak</span></button>
+                  <button type="button" class="emoji-btn" data-val="2">😊<span class="emoji-label">Jarang</span></button>
+                  <button type="button" class="emoji-btn" data-val="3">😐<span class="emoji-label">Kadang-Kadang</span></button>
+                  <button type="button" class="emoji-btn" data-val="4">😔<span class="emoji-label">Sering</span></button>
+                  <button type="button" class="emoji-btn" data-val="5">😢<span class="emoji-label">Terus-Menerus</span></button>
+                </div>
+              </div>
+
+              <!-- Pertanyaan Utama 4 -->
+              <div class="question-group" data-step="4">
+                <h3 class="question-title">4. Apakah kamu merasa diterima oleh lingkungan sekolahmu?</h3>
+                <div class="emoji-scale" data-question="q4">
+                  <button type="button" class="emoji-btn" data-val="5">😁<span class="emoji-label">Sangat Diterima</span></button>
+                  <button type="button" class="emoji-btn" data-val="4">😊<span class="emoji-label">Diterima</span></button>
+                  <button type="button" class="emoji-btn" data-val="3">😐<span class="emoji-label">Biasa Saja</span></button>
+                  <button type="button" class="emoji-btn" data-val="2">😔<span class="emoji-label">Diabaikan</span></button>
+                  <button type="button" class="emoji-btn" data-val="1">😢<span class="emoji-label">Dijauhi/Dikucilkan</span></button>
+                </div>
+              </div>
+
+              <!-- Pertanyaan Utama 5 -->
+              <div class="question-group" data-step="5">
+                <h3 class="question-title">5. Apakah ada hal yang membuatmu sedih atau tertekan hari ini?</h3>
+                <!-- Inverted in JS -->
+                <div class="emoji-scale" data-question="q5">
+                  <button type="button" class="emoji-btn" data-val="1">😁<span class="emoji-label">Tidak Ada</span></button>
+                  <button type="button" class="emoji-btn" data-val="2">😊<span class="emoji-label">Hal Kecil</span></button>
+                  <button type="button" class="emoji-btn" data-val="3">😐<span class="emoji-label">Lumayan Mengganggu</span></button>
+                  <button type="button" class="emoji-btn" data-val="4">😔<span class="emoji-label">Sangat Sedih</span></button>
+                  <button type="button" class="emoji-btn" data-val="5">😢<span class="emoji-label">Sangat Tertekan</span></button>
+                </div>
+              </div>
+
+              <!-- Pertanyaan Pendukung (Steps 6) -->
+              <div class="question-group" data-step="6">
+                <h3 class="question-title">Pertanyaan Pendukung</h3>
+                
+                <div class="form-group">
+                  <label>Apakah kamu mengalami konflik dengan teman di sekolah?</label>
+                  <select class="form-control" id="qp1">
+                    <option value="0">Tidak ada konflik sama sekali</option>
+                    <option value="1">Konflik kecil/kesalahpahaman biasa</option>
+                    <option value="2">Ya, sedang berselisih paham/bertengkar</option>
+                    <option value="3">Ya, saya merasa diintimidasi/dibully</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label>Apakah kamu mengalami kesulitan belajar?</label>
+                  <select class="form-control" id="qp2">
+                    <option value="0">Tidak, pelajaran berjalan lancar</option>
+                    <option value="1">Sedikit kesulitan pada materi tertentu</option>
+                    <option value="2">Ya, banyak materi yang tidak saya pahami</option>
+                    <option value="3">Ya, saya merasa sangat stres dengan tugas/ujian</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Apakah kamu merasa kesepian hari ini?</label>
+                  <select class="form-control" id="qp3">
+                    <option value="0">Tidak, saya dikelilingi teman/keluarga</option>
+                    <option value="1">Kadang-kadang merasa sepi sebentar</option>
+                    <option value="2">Ya, saya merasa tidak punya teman curhat</option>
+                    <option value="3">Ya, saya merasa sangat terisolasi dari lingkungan sekitar</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Navigasi Form -->
+              <div class="checkin-nav">
+                <button type="button" class="btn btn-cream btn-sm" id="prevCheckinBtn" disabled onclick="changeStep(-1)">
+                  <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+                <button type="button" class="btn btn-pink btn-sm" id="nextCheckinBtn" onclick="changeStep(1)">
+                  Lanjut <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Panel Hasil Analisis (Akan Tampil Setelah Form Selesai) -->
+            <div id="checkinResultContainer" style="display: none;" class="checkin-result">
+              <span class="stat-icon" id="resultEmoji">💖</span>
+              <h3>Hasil Analisis Kondisi Mentalmu</h3>
+              
+              <div class="result-badge" id="resultBadge">RINGAN</div>
+              
+              <p id="resultText">
+                Kondisi psikologismu hari ini tergolong aman. Tetap jaga kesehatan mentalmu dan jangan lupa untuk bersyukur ya!
+              </p>
+              
+              <!-- Badge Award Notification (Gamification) -->
+              <div class="badge-item unlocked" id="badgeAwardAlert" style="display: none; max-width: 300px; margin: 20px auto; background-color: var(--light-lavender); border: 2.5px solid var(--border-color); padding: 15px; border-radius: 20px; box-shadow: 4px 4px 0 var(--border-color)">
+                <div class="badge-icon" id="awardedBadgeIcon">🎉</div>
+                <div class="badge-name" id="awardedBadgeName">Check-In Pertama</div>
+                <div style="font-size: 11px; margin-top: 5px;">Kamu baru saja membuka lencana baru!</div>
+              </div>
+
+              <div class="badge-tinggi-alert" id="consecutiveAlert" style="display: none;">
+                ⚠️ Kamu telah mencatat kondisi psikologis kategori <strong>Tinggi</strong> berturut-turut. Guru BK (Bimbingan Konseling) telah menerima notifikasi prioritas dan akan menjadwalkan waktu mengobrol santai denganmu secara rahasia.
+              </div>
+              
+              <div class="hero-btns" style="justify-content: center; margin-top: 25px;">
+                <button class="btn btn-blue btn-sm" onclick="resetCheckin()">Isi Ulang Form</button>
+                <button class="btn btn-lavender btn-sm" onclick="scrollToSection('curhat')">Butuh Teman Curhat AI?</button>
+                <button class="btn btn-green btn-sm" id="btnCounsellorCTA" style="display: none;" onclick="scrollToSection('konselor')">Hubungi BK</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Fitur AI "CurhatKuy" -->
+      <section id="curhat" class="curhatkuy">
+        <div class="container">
+          <h2 class="section-title">CurhatKuy AI</h2>
+          <p class="section-subtitle">"Asisten virtual yang siap mendengarkan ceritamu kapan saja dengan penuh empati."</p>
+          
+          <!-- Validasi Wajib Sebelum Chat -->
+          <div class="card chat-gateway" id="chatGateway">
+            <h3 style="text-align: center; margin-bottom: 20px; font-family: var(--font-display);">Sebelum Mulai, Kenalan Dulu Yuk!</h3>
+            <p style="text-align: center; font-size: 14px; margin-bottom: 25px; color: var(--text-secondary);">
+              Data yang kamu masukkan akan digunakan agar CurhatKuy AI dapat menyapamu dengan ramah dan memantau status kesehatan mentalmu secara aman.
+            </p>
+            
+            <form id="chatRegisterForm" onsubmit="registerChatUser(event)">
+              <div class="form-group">
+                <label for="studentName">Nama Lengkap</label>
+                <input type="text" id="studentName" class="form-control" placeholder="Contoh: Nesha Fidelya Fitra" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="studentClass">Kelas</label>
+                <select id="studentClass" class="form-control" required>
+                  <option value="" disabled selected>Pilih kelasmu</option>
+                  <option value="X.1">X.1</option>
+                  <option value="X.2">X.2</option>
+                  <option value="X.3">X.3</option>
+                  <option value="X.4">X.4</option>
+                  <option value="X.5">X.5</option>
+                  <option value="X.6">X.6</option>
+                  <option value="X.7">X.7</option>
+                  <option value="X.8">X.8</option>
+                  <option value="X.9">X.9</option>
+                  <option value="X.10">X.10</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="studentAge">Umur</label>
+                <input type="number" id="studentAge" class="form-control" min="14" max="20" placeholder="Contoh: 16" required>
+              </div>
+
+              <div class="form-group">
+                <label for="studentWa">Nomor WhatsApp Orang Tua / Siswa</label>
+                <input type="tel" id="studentWa" class="form-control" placeholder="Contoh: 081234567890" required>
+                <small style="font-size: 11px; color: var(--text-secondary); margin-top: 4px; display: block;">*Digunakan konselor BK untuk berkoordinasi secara rahasia jika diperlukan.</small>
+              </div>
+
+              <label class="form-checkbox">
+                <input type="checkbox" id="privacyConsent" required>
+                <span style="font-size: 13px;">
+                  Saya setuju bahwa data curhat saya dilindungi oleh Kebijakan Privasi Ruang Teduh dan Guru BK berhak mengintervensi jika ditemukan risiko tinggi.
+                </span>
+              </label>
+
+              <button type="submit" class="btn btn-pink" style="width: 100%; margin-top: 25px;">
+                Mulai Curhat dengan AI <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Chat Bot Interface (Hidden Initially) -->
+          <div class="chat-box" id="chatBoxContainer" style="display: none;">
+            <div class="chat-header">
+              <div class="chat-user-info">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-title">
+                  <h3>CurhatKuy AI</h3>
+                  <span>Sedang Online & Menyimak</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-cream" onclick="resetChatSession()" title="Reset Obrolan">
+                <i class="fa-solid fa-rotate-left"></i> Ganti Akun
+              </button>
+            </div>
+            
+            <div class="chat-body" id="chatBody">
+              <!-- Initial Greeting message dynamically populated based on name -->
+            </div>
+            
+            <div class="chat-footer">
+              <form id="chatSendForm" onsubmit="sendChatMessage(event)" style="margin:0;">
+                <div class="chat-input-wrapper">
+                  <input type="text" id="chatInput" class="chat-input" placeholder="Ketik curhatanmu di sini..." autocomplete="off">
+                  <button type="submit" class="btn btn-pink btn-circle" style="box-shadow:2px 2px 0 var(--border-color); transform:none;" title="Kirim">
+                    <i class="fa-solid fa-paper-plane" style="font-size:16px;"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 6. Kontak Konselor -->
+      <section id="konselor" class="counselors">
+        <div class="container">
+          <h2 class="section-title">Butuh Teman Bicara?</h2>
+          <p class="section-subtitle">Guru Bimbingan Konseling (BK) kami siap membantumu kapan saja secara privat, nyaman, tanpa menghakimi.</p>
+          
+          <div class="counselors-grid">
+            <!-- Counselor 1 -->
+            <div class="card counselor-card">
+              <div class="counselor-avatar">👨‍🏫</div>
+              <h3 class="counselor-name">Pak Jumardan, S.Pd</h3>
+              <span class="counselor-role">Guru Bimbingan Konseling</span>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                "Setiap masalah pasti ada jalan keluarnya. Jangan ragu untuk berbagi beban ceritamu bersama saya."
+              </p>
+              <a href="https://wa.me/6281234567890?text=Halo%20Pak%20Jumardan%2C%20saya%20siswa%20kelas%20X%20ingin%20berkonsultasi%20mengenai%20kesehatan%20mental%20saya." target="_blank" class="btn btn-green btn-sm" style="width: 100%;">
+                <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
+              </a>
+            </div>
+            
+            <!-- Counselor 2 -->
+            <div class="card counselor-card">
+              <div class="counselor-avatar">👨‍💼</div>
+              <h3 class="counselor-name">Pak Heri Gunawan, S.Pd</h3>
+              <span class="counselor-role">Guru Bimbingan Konseling</span>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                "Ruang BK kini adalah zona aman dan teduh. Mari kita cari jalan tengah bersama untuk ketenangan pikiranmu."
+              </p>
+              <a href="https://wa.me/6289876543210?text=Halo%20Pak%20Heri%20Gunawan%2C%20saya%20siswa%20kelas%20X%20ingin%20berkonsultasi%20mengenai%20kesehatan%20mental%20saya." target="_blank" class="btn btn-green btn-sm" style="width: 100%;">
+                <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Artikel Edukasi -->
+      <section id="artikel" class="articles">
+        <div class="container">
+          <h2 class="section-title">Edukasi & Tips Teduh</h2>
+          <p class="section-subtitle">Pelajari tips praktis untuk merawat diri, mengelola stres sekolah, dan beradaptasi di lingkungan SMA.</p>
+          
+          <div class="search-bar" style="max-width: 400px; margin: 0 auto 30px; display: flex; gap: 10px;">
+            <input type="text" id="articleSearchInput" class="form-control" placeholder="Cari artikel..." oninput="searchArticles()">
+            <button class="btn btn-pink btn-sm" style="box-shadow: 2px 2px 0 var(--border-color); transform: none;" onclick="searchArticles()"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+
+          <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterArticles('Semua')">Semua</button>
+            <button class="filter-btn" onclick="filterArticles('Kesehatan Mental')">Kesehatan Mental</button>
+            <button class="filter-btn" onclick="filterArticles('Self Love')">Self Love</button>
+            <button class="filter-btn" onclick="filterArticles('Anti Bullying')">Anti Bullying</button>
+            <button class="filter-btn" onclick="filterArticles('Adaptasi di SMA')">Adaptasi</button>
+            <button class="filter-btn" onclick="filterArticles('Manajemen Stres')">Manajemen Stres</button>
+            <button class="filter-btn" onclick="filterArticles('Produktivitas Belajar')">Belajar</button>
+          </div>
+
+          <div class="articles-grid" id="articlesGrid">
+            <!-- Article cards rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Testimoni Siswa -->
+      <section class="testimonials">
+        <div class="container">
+          <h2 class="section-title">Apa Kata Teman Kita?</h2>
+          <p class="section-subtitle">Testimoni nyata dari teman-teman yang telah menggunakan layanan Ruang Teduh secara anonim.</p>
+          
+          <div class="carousel-container card">
+            <div class="testimonial-track" id="testimonialTrack">
+              
+              <div class="testimonial-slide active">
+                <p class="testimonial-quote">
+                  "Sejak masuk SMA, aku sempat cemas banget nggak bisa dapet teman baru dan takut dibully. Lewat kuesioner harian Ruang Teduh, Pak Heri langsung tahu kondisiku yang drop dan ngajak ngobrol santai. Senang banget rasanya didengar!"
+                </p>
+                <div class="testimonial-author">🌸 Siswa Kelas X-1 (Anonim)</div>
+              </div>
+              
+              <div class="testimonial-slide">
+                <p class="testimonial-quote">
+                  "CurhatKuy AI asyik banget buat diajak cerita jam 11 malam pas kepikiran tugas sekolah. Responnya menenangkan dan bikin pikiran jadi lebih adem sebelum tidur. Terus data kita aman banget rahasia."
+                </p>
+                <div class="testimonial-author">🍀 Siswa Kelas X-3 (Anonim)</div>
+              </div>
+
+              <div class="testimonial-slide">
+                <p class="testimonial-quote">
+                  "Lencana/badge pengisian kuesioner bikin aku rajin check-in perasaan tiap pagi. Aku jadi belajar mengenali emosiku sendiri. Sangat merekomendasikan program ini buat anak kelas X baru!"
+                </p>
+                <div class="testimonial-author">✨ Siswa Kelas X-2 (Anonim)</div>
+              </div>
+
+            </div>
+            
+            <button class="carousel-btn prev-btn" onclick="moveTestimonial(-1)" aria-label="Slide sebelumnya">◀</button>
+            <button class="carousel-btn next-btn" onclick="moveTestimonial(1)" aria-label="Slide berikutnya">▶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. FAQ -->
+      <section class="faq">
+        <div class="container">
+          <h2 class="section-title">Pertanyaan Umum (FAQ)</h2>
+          <p class="section-subtitle">Temukan jawaban atas beberapa hal yang sering ditanyakan seputar Ruang Teduh.</p>
+          
+          <div class="faq-container">
+            <div class="faq-item">
+              <button class="faq-trigger">Apakah data kesehatan mental saya aman?</button>
+              <div class="faq-content">
+                <p>
+                  Sangat aman! Data pengisian kuesioner harianmu hanya dapat diakses secara langsung oleh Guru BK sekolah (Pak Jumardan dan Pak Heri Gunawan). Tidak ada siswa lain atau guru mata pelajaran umum yang bisa melihat riwayat perasaanmu.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-trigger">Apakah cerita curhat saya ke AI akan diketahui teman?</button>
+              <div class="faq-content">
+                <p>
+                  Tidak. Sesi obrolanmu dengan CurhatKuy AI terenkripsi secara lokal di browsermu dan tidak dibagikan kepada teman sekelasmu. Guru BK pun hanya akan memantau riwayat obrolan jika sistem mendeteksi kata kunci berisiko sangat tinggi demi keselamatanmu.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-trigger">Bagaimana cara menghubungi BK lewat web ini?</button>
+              <div class="faq-content">
+                <p>
+                  Kamu bisa menuju bagian "Butuh Teman Bicara?" lalu menekan tombol "Chat WhatsApp" pada profil konselor yang kamu inginkan. Kamu akan langsung dialihkan ke obrolan WhatsApp Guru BK bersangkutan.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-trigger">Apa sebenarnya fungsi utama CurhatKuy AI?</button>
+              <div class="faq-content">
+                <p>
+                  CurhatKuy AI berfungsi sebagai pendamping curhat virtual 24/7. AI dirancang untuk merespons ceritamu secara ramah, suportif, dan memberikan saran-saran relaksasi positif yang bisa kamu coba sendiri di rumah saat sedang cemas atau stres.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- STUDENT DASHBOARD PANEL -->
+    <div id="studentDashboardPage" class="dashboard-section">
+      <div class="container">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h2>Ruang Teduh Siswa</h2>
+            <p>Pantau perkembangan kestabilan emosimu sehari-hari.</p>
+          </div>
+          <div class="dashboard-user-meta">
+            <div style="text-align: right;">
+              <h4 id="dashStudentName">Nama Siswa</h4>
+              <span id="dashStudentClass" class="priority-badge priority-low">Kelas X.1</span>
+            </div>
+            <div class="chat-avatar" style="background-color: var(--soft-lavender)">🎒</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div style="display: flex; flex-direction: column; gap: 30px;">
+            <div class="card tracker-card">
+              <h3>Progress Tracker Kesehatan Mental</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                Grafik 7 check-in terakhir perasaanmu. Indeks tinggi menunjukkan tingkat kecemasan/kesedihan yang meningkat.
+              </p>
+              <div class="chart-placeholder">
+                <canvas id="studentMoodChart" class="chart-canvas"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Riwayat Perasaan Kamu</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">
+                Daftar check-in perasaan harian yang telah kamu lakukan.
+              </p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Skor</th>
+                      <th>Kategori</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studentHistoryTableBody">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 30px;">
+            <!-- Streaks -->
+            <div class="card" style="padding: 20px;">
+              <div class="streak-tracker">
+                <span class="streak-fire">🔥</span>
+                <div class="streak-text">
+                  Streak Pengisian Kuesioner: <br>
+                  <span class="streak-count" id="dashStreakCount">0 Hari</span>
+                </div>
+              </div>
+              <p style="font-size: 12px; margin: 0; color: var(--text-secondary);">Isi kuesioner harian secara rutin setiap hari untuk meningkatkan lencana apresiasi dirimu!</p>
+            </div>
+
+            <!-- Badges Gallery -->
+            <div class="card" style="padding: 20px;">
+              <h3>Lencana Apresiasi</h3>
+              <div class="badge-gallery" id="badgeGallery">
+                <div class="badge-item" id="badge-first-checkin">
+                  <div class="badge-icon">🌱</div>
+                  <span class="badge-name">Langkah Awal</span>
+                </div>
+                <div class="badge-item" id="badge-streak-3">
+                  <div class="badge-icon">🔥</div>
+                  <span class="badge-name">Konsisten 3 Hari</span>
+                </div>
+                <div class="badge-item" id="badge-mindful">
+                  <div class="badge-icon">🧘</div>
+                  <span class="badge-name">Sobat Teduh</span>
+                </div>
+                <div class="badge-item" id="badge-positive">
+                  <div class="badge-icon">✨</div>
+                  <span class="badge-name">Bintang Ceria</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Login Modal -->
+  <div class="auth-panel" id="authModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="margin: 0; font-family: var(--font-display);">Masuk ke Ruang Teduh</h3>
+      <button class="btn btn-circle btn-sm" onclick="closeAuthModal()" style="box-shadow:none;">✖</button>
+    </div>
+
+    <!-- Student Auth -->
+    <div class="auth-form active" id="studentAuthForm">
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
+        Jika kamu sudah pernah mendaftarkan nama di portal CurhatKuy AI, silakan masuk menggunakan nama lengkapmu.
+      </p>
+      <div class="form-group">
+        <label for="loginStudentName">Nama Lengkap Siswa</label>
+        <input type="text" id="loginStudentName" class="form-control" placeholder="Masukkan nama lengkapmu..." required>
+      </div>
+      <button class="btn btn-pink" style="width:100%; margin-top: 10px;" onclick="loginAsStudent()">Masuk Sebagai Siswa</button>
+    </div>
+  </div>
+
+  <!-- Background overlay for modal -->
+  <div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1000;" onclick="closeAuthModal()"></div>
+
+  <!-- Toast Alert Containers for real-time notification simulation -->
+  <div class="alert-stack" id="alertStack"></div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-logo">RUANG TEDUH</div>
+      <p class="footer-text">
+        Platform deteksi dini kesehatan mental untuk menciptakan ekosistem sekolah yang hangat, aman, dan teduh.
+      </p>
+      <div class="footer-signature">Pengembang by Rahmat Dwi Kurniawan</div>
+      <div class="footer-text" style="font-size:12px; margin-top: 10px; opacity:0.7;">
+        &copy; 2026 Ruang Teduh. All rights reserved. | Program Inisiatif Nesha Fidelya Fitra.
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Main Javascript Code -->
+  <script src="app.js"></script>
+</body>
+</html>
