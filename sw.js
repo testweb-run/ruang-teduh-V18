@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ruang-teduh-v1';
+const CACHE_NAME = 'ruang-teduh-v2';
 const ASSETS = [
   './',
   './index.html',
