@@ -1606,6 +1606,33 @@ footer {
 
 /* Responsive Styles */
 @media (max-width: 1024px) {
+  header {
+    padding: 8px 0 !important;
+  }
+
+  .logo svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .logo-text {
+    font-size: 18px !important;
+  }
+
+  .btn-circle {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 16px !important;
+  }
+
+  .menu-btn {
+    font-size: 20px !important;
+  }
+
+  .nav-container {
+    gap: 8px !important;
+  }
+
   .logo-tag {
     display: none !important;
   }
